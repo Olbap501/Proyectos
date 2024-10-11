@@ -4,7 +4,8 @@
 import discord
 from discord.ext import commands
 import random
-
+import os
+import requests
 from funciones_bot import *
 
 description = '''An example bot to showcase the discord.ext.commands extension
@@ -50,6 +51,42 @@ async def roll(ctx, dice: str):
     result = ', '.join(str(random.randint(1, limit)) for r in range(rolls))
     await ctx.send(result)
 
+@bot.command()
+async def meme(ctx):
+    meme = random.choice(os.listdir("memes_discord"))
+    with open(f'memes_discord/{meme}', 'rb') as f:
+        # ¡Vamos a almacenar el archivo de la biblioteca Discord convertido en esta variable!
+        picture = discord.File(f)
+    # A continuación, podemos enviar este archivo como parámetro.
+    await ctx.send(file=picture)
+
+def get_duck_image_url():    
+    url = 'https://random-d.uk/api/random'
+    res = requests.get(url)
+    data = res.json()
+    return data['url']
+
+
+@bot.command('duck')
+async def duck(ctx):
+    '''Una vez que llamamos al comando duck, 
+    el programa llama a la función get_duck_image_url'''
+    image_url = get_duck_image_url()
+    await ctx.send(image_url)
+
+def get_dog_image_url():    
+    url = 'https://random.dog/woof.json'
+    res = requests.get(url)
+    data = res.json()
+    return data['url']
+
+
+@bot.command('dog')
+async def dog(ctx):
+    '''Una vez que llamamos al comando dog, 
+    el programa llama a la función get_dog_image_url'''
+    image_url = get_dog_image_url()
+    await ctx.send(image_url)
 
 @bot.command(description='For when you wanna settle the score some other way')
 async def choose(ctx, *choices: str):
